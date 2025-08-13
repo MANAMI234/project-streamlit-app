@@ -389,7 +389,7 @@ elif st.session_state.step == 5:
             st.markdown("""
                 <div style="text-align: center; padding: 8px; background-color: #f0f8ff; border-radius: 10px;">
                     <strong>ARKA SADHUKHAN</strong><br>
-                    UI/UX Designer<br>
+                    Tech Lead<br>
                 </div>
             """, unsafe_allow_html=True)
         if st.button("📩 Contact ARKA", key="contact_arka"):
