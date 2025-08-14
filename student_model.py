@@ -11,13 +11,22 @@ import sqlite3
 st.set_page_config(page_title="🎓 SmartScholar", layout="centered")
 
 # Gradient Background CSS
-page_bg = """
+import streamlit as st
+
+# Sidebar theme toggle
+theme_choice = st.sidebar.radio("🌗 Select Theme", ["Light", "Dark"])
+
+# Light mode gradient CSS
+light_bg = """
 <style>
 [data-testid="stAppViewContainer"] {
+    transition: background 1s ease-in-out;
     background-color: #FF9A9E;
     background-image: linear-gradient(45deg, #FF9A9E 0%, #FECFEF 50%, #98C1FF 100%);
 }
+
 .navbar {
+    transition: background 1s ease-in-out;
     background: linear-gradient(90deg, #FFB6C1, #87CEFA);
     padding: 14px;
     border-radius: 10px;
@@ -31,6 +40,7 @@ page_bg = """
     width: 100%;
     z-index: 999;
 }
+
 .navbar button {
     background: transparent;
     color: white;
@@ -42,12 +52,73 @@ page_bg = """
     border-radius: 8px;
     transition: background 0.3s;
 }
+
 .navbar button:hover {
     background: rgba(255, 255, 255, 0.2);
 }
 </style>
 """
-st.markdown(page_bg, unsafe_allow_html=True)
+
+# Dark mode gradient CSS
+dark_bg = """
+<style>
+[data-testid="stAppViewContainer"] {
+    transition: background 1s ease-in-out;
+    background-color: #1E1E1E;
+    background-image: linear-gradient(45deg, #0F2027 0%, #203A43 50%, #2C5364 100%);
+}
+
+.navbar {
+    transition: background 1s ease-in-out;
+    background: linear-gradient(90deg, #141E30, #243B55);
+    padding: 14px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 999;
+}
+
+.navbar button {
+    background: transparent;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    padding: 8px 16px;
+    border-radius: 8px;
+    transition: background 0.3s;
+}
+
+.navbar button:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+</style>
+"""
+
+# Apply theme based on selection
+if theme_choice == "Light":
+    st.markdown(light_bg, unsafe_allow_html=True)
+else:
+    st.markdown(dark_bg, unsafe_allow_html=True)
+
+# Navbar HTML
+st.markdown("""
+<div class="navbar">
+    <button>Home 🏠</button>
+    <button>Prediction 📊</button>
+    <button>Study Planner</button>
+    <button>Review us 💫</button>
+    <button>Contact Us 📩</button>
+</div>
+""", unsafe_allow_html=True)
+
 
 def show_footer():
     st.markdown("""
@@ -138,14 +209,18 @@ if st.session_state.step == 0:
         "<h1 style='text-align: center; color: black;'>🎓 SMART SCHOLAR</h1>",
         unsafe_allow_html=True
     )
-    st.markdown("<h3 style='text-align:center;'>Welcome!</h3>", unsafe_allow_html=True)
-    st.markdown("<h3 style='text-align:center;'>Please select a page from the navigation bar above.</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align:center; color: black;'>Welcome!</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align:center; color: black;'>Please select a page from the navigation bar above.</h3>", unsafe_allow_html=True)
     show_footer()
 
 # --- Home Page ---
 elif st.session_state.step == 1:
     progress_bar(1, 5)
-    st.title("🏠 Home Page")
+    st.markdown(
+    "<h1 style='color: black'>🏠 Home Page</h1>",
+    unsafe_allow_html=True
+)
+
 
     intro_text = """
     Student performance prediction is an emerging field in educational data science that focuses on analyzing and forecasting a student’s academic success using machine learning and statistical techniques. By leveraging historical academic records, attendance, socio-economic factors, and behavioral patterns, predictive models can identify students at risk of underperforming and highlight factors contributing to their success. This approach helps educators, institutions, and policymakers make informed decisions, provide timely interventions, and design personalized learning plans to enhance overall academic outcomes. With advancements in artificial intelligence, student performance prediction is becoming an essential tool in building smart, data-driven educational systems.
@@ -164,7 +239,11 @@ elif st.session_state.step == 1:
 # --- Prediction Page ---
 elif st.session_state.step == 2:
     progress_bar(2, 5)
-    st.title("📊 Student Performance Predictor")
+    st.markdown(
+    "<h1 style='color: black;'>📊 Student Performance Predictor</h1>",
+    unsafe_allow_html=True
+)
+
 
     # Load the saved model and encoders once
     try:
@@ -190,7 +269,24 @@ elif st.session_state.step == 2:
         result = 'Pass' if pred_score >= 40 else 'Fail'
         return pred_score, result
 
-
+    # Add custom CSS for black text
+    st.markdown(
+    """
+    <style>
+    /* Make all labels black */
+    label, .stSelectbox label, .stNumberInput label, .stTextInput label, .stCheckbox label {
+        color: black !important;
+        font-weight: bold;
+    }
+    
+    /* Make st.write() outputs black */
+    .stMarkdown p {
+        color: black !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+    )
     st.markdown('<div class="input-box">', unsafe_allow_html=True)
     name = st.text_input("Enter your name")
     if st.checkbox("Are you a student"):
@@ -212,11 +308,55 @@ elif st.session_state.step == 2:
             st.info("Result: Fail")
         else:
             try:
-                predicted_score, pass_fail = predict_performance(study_hours, attendance, previous_grade, extracurricular, parental_education)
-                st.success(f"Predicted Final Score: {predicted_score}")
-                st.info(f"Result: {pass_fail}")
+                predicted_score, pass_fail = predict_performance(
+        study_hours, attendance, previous_grade, extracurricular, parental_education
+    )
+
+                st.markdown(
+        f"""
+        <style>
+        @media (prefers-color-scheme: light) {{
+            .custom-success {{
+                background: linear-gradient(135deg, #d4edda, #c3e6cb);
+                color: #155724;
+            }}
+            .custom-info {{
+                background: linear-gradient(135deg, #d1ecf1, #bee5eb);
+                color: #0c5460;
+            }}
+        }}
+        @media (prefers-color-scheme: dark) {{
+            .custom-success {{
+                background: linear-gradient(135deg, #155724, #1e7e34);
+                color: white;
+            }}
+            .custom-info {{
+                background: linear-gradient(135deg, #0c5460, #117a8b);
+                color: white;
+            }}
+        }}
+        .custom-box {{
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }}
+        </style>
+
+        <div class="custom-box custom-success">
+            Predicted Final Score: {predicted_score}
+        </div>
+        <div class="custom-box custom-info">
+            Result: {pass_fail}
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
             except Exception as e:
                 st.error(f"Error during prediction: {e}")
+
 
 
 
@@ -233,8 +373,28 @@ elif st.session_state.step == 2:
 # --- Study Planner Page ---
 elif st.session_state.step == 3:
     progress_bar(3, 5)
-    st.title("📚 Study Planning Suggestion")
-
+    st.markdown(
+    "<h1 style='color: black;'>📚 Study Planning Suggestion</h1>",
+    unsafe_allow_html=True
+)
+    # Custom CSS to make all form labels and text black
+    st.markdown(
+    """
+    <style>
+    /* Labels for text_input, number_input, selectbox, checkbox */
+    label, .stSelectbox label, .stNumberInput label, .stTextInput label, .stCheckbox label {
+        color: black !important;
+        font-weight: bold;
+    }
+    
+    /* Text output from st.write() or st.markdown */
+    .stMarkdown p {
+        color: black !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+    )
     college_time = st.number_input("College Hours per Day", min_value=0.0, max_value=12.0, step=0.5)
     free_hours = st.number_input("Study Hours per Day (hours spent studying at home)", min_value=0.0, max_value=12.0, step=0.5)
     sleep_hours = st.number_input("Sleep Hours per Day", min_value=0.0, max_value=12.0, step=0.5)
@@ -286,7 +446,15 @@ elif st.session_state.step == 3:
             # Sleep block
             plan.append(f"{int(sleep_start):02d}:00 - {int(sleep_end):02d}:00 ➝ 🛌 Sleep")
 
-            st.subheader("🕒 Your Optimized Daily Routine:")
+            st.markdown(
+    """
+    <h3 style="color: black; font-weight: bold;">
+        🕒 Your Optimized Daily Routine:
+    </h3>
+    """,
+    unsafe_allow_html=True
+)
+
             for item in plan:
                 st.write(item)
         else:
@@ -314,16 +482,40 @@ if 'step' not in st.session_state:
     st.session_state.step = 4
 
 if st.session_state.step == 4:
-    st.title("💫 Review Us")
+    st.markdown(
+    "<h1 style='color: black;'> Review Us 💫</h1>",
+    unsafe_allow_html=True
+)
 
-    st.write("Rating (Stars):")
+
+    st.markdown(
+    "<p style='color: black; font-weight: bold;'>Rating (Stars):</p>",
+    unsafe_allow_html=True
+    )
+
     cols = st.columns(5)
     for i in range(5):
         if cols[i].button("⭐" if i < st.session_state.rating else "☆", key=f"star_{i}"):
             st.session_state.rating = i + 1
-    st.write(f"Your rating: {st.session_state.rating} stars")
+    st.markdown(
+    f"<p style='color: black; font-weight: bold;'>Your rating: {st.session_state.rating} stars</p>",
+    unsafe_allow_html=True
+    )
+
 
     with st.form("review_form", clear_on_submit=True):
+        # CSS for black, bold form labels
+        st.markdown(
+    """
+    <style>
+    label, .stTextInput label, .stTextArea label {
+        color: black !important;
+        font-weight: bold;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+        )
         name = st.text_input("Your Name")
         review_msg = st.text_area("Your Review")
         submit = st.form_submit_button("Submit Review")
@@ -337,9 +529,35 @@ if st.session_state.step == 4:
                 st.warning("Please select a rating.")
             else:
                 time_now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                add_review(name.strip(), review_msg.strip(), st.session_state.rating, time_now)
-                st.success("Thank you for your review!")
-                st.session_state.rating = 0  # reset stars
+                colored_name = f"<span style='color:black; font-weight:bold;'>{name.strip()}</span>"
+                add_review(colored_name, review_msg.strip(), st.session_state.rating, time_now)
+                # Custom success message with theme-aware colors
+                st.markdown("""
+    <style>
+    @media (prefers-color-scheme: light) {
+        .custom-success {
+            background-color: #d4edda; /* Light green */
+            color: #155724; /* Dark green text */
+        }
+    }
+    @media (prefers-color-scheme: dark) {
+        .custom-success {
+            background-color: #155724; /* Dark green */
+            color: #ffffff; /* White text */
+        }
+    }
+    .custom-success {
+        padding: 12px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+    </style>
+    <div class="custom-success">Thank you for your review!</div>
+""", unsafe_allow_html=True)
+            st.session_state.rating = 0  # reset stars
 
     reviews = get_reviews()
 
@@ -366,7 +584,39 @@ if st.session_state.step == 4:
         if st.button("Delete Review", key=f"del_{rev_id}"):
             c.execute("DELETE FROM reviews WHERE id = ?", (rev_id,))
             conn.commit()
-            st.warning("Review deleted! Please refresh the page to see the changes.")
+            st.markdown(
+    """
+    <style>
+    .custom-warning {
+        padding: 10px;
+        border-radius: 8px;
+        background-color: #d4edda;
+        color: black;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+    /* Hover color for dark mode */
+    @media (prefers-color-scheme: dark) {
+        .custom-warning:hover {
+            background-color: #d4edda;
+            color: white;
+        }
+    }
+    /* Hover color for light mode */
+    @media (prefers-color-scheme: light) {
+        .custom-warning:hover {
+            background-color: #d4edda;
+            color: black;
+        }
+    }
+    </style>
+    <div class="custom-warning">
+        ⚠️ Review deleted! Please refresh the page to see the changes.
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
 
     col1, col2 = st.columns(2)
     with col1:
@@ -380,55 +630,72 @@ if st.session_state.step == 4:
 # --- Contact Us Page ---
 elif st.session_state.step == 5:
     progress_bar(5, 5)
-    st.title(" 🙋‍♀ Meet the creators")
+    st.markdown(
+    "<h1 style='color: black;'>🙋‍♀ Meet the creators</h1>",
+    unsafe_allow_html=True
+)
+
 
     col1, col2, col3 = st.columns(3)
 
     with col1:
         if st.button("👤 View ARKA", key="arka_button"):
-            st.markdown("""
-                <div style="text-align: center; padding: 8px; background-color: #f0f8ff; border-radius: 10px;">
-                    <strong>ARKA SADHUKHAN</strong><br>
-                    Tech Lead<br>
-                </div>
-            """, unsafe_allow_html=True)
+            st.markdown(
+    """
+    <div style="text-align: center; padding: 8px; background-color: #f0f8ff; border-radius: 10px;">
+        <strong style="color: black;">ARKA SADHUKHAN</strong>
+        <br>
+        <span style="color: black;">Tech Lead</span>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
         if st.button("📩 Contact ARKA", key="contact_arka"):
             st.markdown("""
                 <div style="text-align: center; padding: 8px; background-color: #f0f8ff; border-radius: 10px;">
-                    <strong>CONTACT ME</strong><br>
-                    <strong>aniarka7872@gmail.com</strong><br>
+                    <strong style="color: black;">CONTACT ME</strong><br>
+                    <strong style="color: black;">aniarka7872@gmail.com</strong><br>
                 </div>
             """, unsafe_allow_html=True)
 
     with col2:
         if st.button("👤 View Manami", key="manami_button"):
-            st.markdown("""
-                <div style="text-align: center; padding: 8px; background-color: #f0f8ff; border-radius: 10px;">
-                    <strong>MANAMI MANNA</strong><br>
-                    ML & Python Developer<br>
-                </div>
-            """, unsafe_allow_html=True)
+            st.markdown(
+    """
+    <div style="text-align: center; padding: 8px; background-color: #f0f8ff; border-radius: 10px;">
+        <strong style="color: black;">MANAMI MANNA</strong><br>
+        <span style="color: black;">ML & Python Developer</span><br>
+    </div>
+    """,
+    unsafe_allow_html=True
+    )
+
         if st.button("📩 Contact MANAMI", key="contact_manami"):
             st.markdown("""
                 <div style="text-align: center; padding: 8px; background-color: #f0f8ff; border-radius: 10px;">
-                    <strong>CONTACT ME</strong><br>
-                    <strong>manamimanna0@gmail.com</strong><br>
+                    <strong style="color: black;">CONTACT ME</strong><br>
+                    <strong style="color: black;">manamimanna0@gmail.com</strong><br>
                 </div>
             """, unsafe_allow_html=True)
 
     with col3:
         if st.button("👤 View Soumyajit", key="soumyajit_button"):
-            st.markdown("""
-                <div style="text-align: center; padding: 8px; background-color: #f0f8ff; border-radius: 10px;">
-                    <strong>SOUMYAJIT ROY</strong><br>
-                    Frontend & Backend Developer
-                </div>
-            """, unsafe_allow_html=True)
+           st.markdown(
+    """
+    <div style="text-align: center; padding: 8px; background-color: #f0f8ff; border-radius: 10px;">
+        <strong style="color: black;">SOUMYAJIT ROY</strong><br>
+        <span style="color: black;">Frontend & Backend Developer</span>
+    </div>
+    """,
+    unsafe_allow_html=True
+    )
+
         if st.button("📩 Contact SOUMYAJIT", key="contact_soumyajit"):
             st.markdown("""
                 <div style="text-align: center; padding: 8px; background-color: #f0f8ff; border-radius: 10px;">
-                    <strong>CONTACT ME</strong><br>
-                    <strong>soumyajitroy0303@gmail.com</strong><br>
+                    <strong style="color: black;">CONTACT ME</strong><br>
+                    <strong style="color: black;">soumyajitroy0303@gmail.com</strong><br>
                 </div>
             """, unsafe_allow_html=True)
 
