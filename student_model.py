@@ -9,116 +9,16 @@ import sqlite3
 
 # Page config
 st.set_page_config(page_title="🎓 SmartScholar", layout="centered")
-
-# Gradient Background CSS
-import streamlit as st
-
-# Sidebar theme toggle
-theme_choice = st.sidebar.radio("🌗 Select Theme", ["Light", "Dark"])
-
-# Light mode gradient CSS
-light_bg = """
+# Gradient Background
+page_bg = """
 <style>
 [data-testid="stAppViewContainer"] {
-    transition: background 1s ease-in-out;
     background-color: #FF9A9E;
     background-image: linear-gradient(45deg, #FF9A9E 0%, #FECFEF 50%, #98C1FF 100%);
 }
-
-.navbar {
-    transition: background 1s ease-in-out;
-    background: linear-gradient(90deg, #FFB6C1, #87CEFA);
-    padding: 14px;
-    border-radius: 10px;
-    display: flex;
-    justify-content: space-evenly;
-    align-items: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 999;
-}
-
-.navbar button {
-    background: transparent;
-    color: white;
-    font-size: 18px;
-    font-weight: bold;
-    border: none;
-    cursor: pointer;
-    padding: 8px 16px;
-    border-radius: 8px;
-    transition: background 0.3s;
-}
-
-.navbar button:hover {
-    background: rgba(255, 255, 255, 0.2);
-}
 </style>
 """
-
-# Dark mode gradient CSS
-dark_bg = """
-<style>
-[data-testid="stAppViewContainer"] {
-    transition: background 1s ease-in-out;
-    background-color: #1E1E1E;
-    background-image: linear-gradient(45deg, #0F2027 0%, #203A43 50%, #2C5364 100%);
-}
-
-.navbar {
-    transition: background 1s ease-in-out;
-    background: linear-gradient(90deg, #141E30, #243B55);
-    padding: 14px;
-    border-radius: 10px;
-    display: flex;
-    justify-content: space-evenly;
-    align-items: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 999;
-}
-
-.navbar button {
-    background: transparent;
-    color: white;
-    font-size: 18px;
-    font-weight: bold;
-    border: none;
-    cursor: pointer;
-    padding: 8px 16px;
-    border-radius: 8px;
-    transition: background 0.3s;
-}
-
-.navbar button:hover {
-    background: rgba(255, 255, 255, 0.2);
-}
-</style>
-"""
-
-# Apply theme based on selection
-if theme_choice == "Light":
-    st.markdown(light_bg, unsafe_allow_html=True)
-else:
-    st.markdown(dark_bg, unsafe_allow_html=True)
-
-# Navbar HTML
-st.markdown("""
-<div class="navbar">
-    <button>Home 🏠</button>
-    <button>Prediction 📊</button>
-    <button>Study Planner</button>
-    <button>Review us 💫</button>
-    <button>Contact Us 📩</button>
-</div>
-""", unsafe_allow_html=True)
-
+st.markdown(page_bg, unsafe_allow_html=True)
 
 def show_footer():
     st.markdown("""
